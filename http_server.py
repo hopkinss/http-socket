@@ -66,6 +66,12 @@ def parse_request(request):
 
 
 def get_mimetype(arg):
+    """
+    Identifies the mimetype of resource
+    :param arg: resource
+    :return: (tuple) mt - mimetype
+             (int) mc - mimetype code for conditional logic
+    """
     d={'text/html':1,
        'text/plain':2,
        'image/jpeg':3,
@@ -78,7 +84,11 @@ def get_mimetype(arg):
     return mt,mc
 
 def list_contents(dir):
-
+    """
+    Lists the contents of a directory as unordered list in byte
+    :param dir: path to folder
+    :return: (byte) HTML for ul tag that display the contents of a folder
+    """
     contents="<!DOCTYPE html><html><body><ul>"
     for i in os.listdir(dir):
         contents += "<li>" + i + "</li>"
@@ -86,6 +96,11 @@ def list_contents(dir):
     return contents.encode()
 
 def read_contents(file):
+    """
+    Reads a file as byte
+    :param file: path to file
+    :return: (byte) Contents of file
+    """
     with open(file,'rb') as f:
         b=f.read(1)
         bf = b
