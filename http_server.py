@@ -72,16 +72,19 @@ def get_mimetype(arg):
     :return: (tuple) mt - mimetype
              (int) mc - mimetype code for conditional logic
     """
-    d={'text/html':1,
-       'text/plain':2,
-       'image/jpeg':3,
-       'image/png':4,
-       None:0
-    }
-    mt=mimetypes.guess_type(arg)
-    mc=d[mt[0]]
+    try:
+        d={'text/html':1,
+           'text/plain':2,
+           'image/jpeg':3,
+           'image/png':4,
+           None:0
+        }
+        mt=mimetypes.guess_type(arg)
+        mc=d[mt[0]]
 
-    return mt,mc
+        return mt,mc
+    except:
+        raise NameError
 
 def list_contents(dir):
     """
@@ -89,16 +92,17 @@ def list_contents(dir):
     :param dir: path to folder
     :return: (byte) HTML for ul tag that display the contents of a folder
     """
-    contents="<!DOCTYPE html><html><body><ul>"
+    contents=f"<!DOCTYPE html><html><body><h4>Contents of {dir}</h4><ul>"
     for i in os.listdir(dir):
-        contents += "<li>" + i + "</li>"
-    contents += "</body></html>"
+        print(i)
+        contents += "<li><a href=\"" + i + "\">" + i + "</a></li>"
+    contents += "</ul></body></html>"
     return contents.encode()
 
 def read_contents(file):
     """
     Reads a file as byte
-    :param file: path to file
+    :param file: path to fileS
     :return: (byte) Contents of file
     """
     with open(file,'rb') as f:
@@ -143,7 +147,7 @@ def server(log_buffer=sys.stderr):
 
                     # Path is a directory
                     if mc==0:
-                        dir= os.path.dirname(sys.argv[0])
+                        dir= os.path.join(os.path.dirname(sys.argv[0]),"webroot")
                         if path != '/' :
                             dir += "/" + path
 
@@ -160,7 +164,8 @@ def server(log_buffer=sys.stderr):
                         )
                     # Path is a file
                     else:
-                        file = os.path.abspath(os.path.dirname(sys.argv[0]) + path)
+                        dir = os.path.join(os.path.dirname(sys.argv[0]), "webroot")
+                        file = os.path.abspath(dir + path)
 
                         # if file doesnt exist
                         if not os.path.exists(file):
@@ -173,27 +178,20 @@ def server(log_buffer=sys.stderr):
                                 mimetype=mt[0].encode()
                             )
 
-
-
-                    # response = response_ok(
-                    #     body=b"Welcome to my web server",
-                    #     mimetype=b"text/plain"
-                    # )
                 except NotImplementedError:
                     response = response_method_not_allowed()
 
                 conn.sendall(response)
             except:
                 traceback.print_exc()
-            # finally:
-            #     # conn.close()
+            finally:
+                pass
+                # conn.close()
 
     except KeyboardInterrupt:
-        sock.close()
-        return
-    except:
         pass
-        # traceback.print_exc()
+    except:
+        traceback.print_exc()
 
 
 if __name__ == '__main__':
